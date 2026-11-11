@@ -23,7 +23,7 @@ export const BRAND = {
 //  mode 'flat'   -> satu tarif dasar (basePrice)
 //  mode 'perJam' -> hourlyRate x durasi
 export const PRICING = {
-  mode: 'flat',
+  mode: 'perJam',
   basePrice: 110000,
   hourlyRate: 40000,
   serviceFee: 0,
