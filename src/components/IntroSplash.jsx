@@ -75,7 +75,8 @@ export default function IntroSplash() {
           <g className="ti-pop" style={{ animationDelay: '1.35s' }}>
             <circle cx="222" cy="158" r="23" fill="#fda126" />
             <circle cx="200" cy="166" r="9" fill="#fda126" />
-            <path d="M196 330 C186 276 192 204 222 190 C252 204 258 276 248 330Z" fill="#fda126" />
+                           <path d="M196 330 C186 276 192 204 222 190 C244 200 250 226 250 242 C270 252 274 286 252 302 C250 312 249 322 248 330Z" fill="#fda126" />
+               <path d="M240 258 Q262 274 246 294" stroke="#fff" strokeWidth="4" strokeLinecap="round" fill="none" opacity=".75" />
             <path className="ti-wave" d="M240 210 Q268 186 270 158" stroke="#fda126" strokeWidth="14" strokeLinecap="round" fill="none" />
           </g>
           <g className="ti-pop" style={{ animationDelay: '1.2s' }}>
