@@ -27,7 +27,8 @@ export default function HeroIllustration() {
         <g className="figure">
           <circle cx="222" cy="168" r="23" fill="#FDA126" />
           <circle cx="200" cy="176" r="9" fill="#FDA126" />
-          <path d="M196 340 C186 286 192 214 222 200 C252 214 258 286 248 340Z" fill="#FDA126" />
+                      <path d="M196 340 C186 286 192 214 222 200 C244 210 250 236 250 252 C270 262 274 296 252 312 C250 322 249 332 248 340Z" fill="#FDA126" />
+             <path d="M240 268 Q262 284 246 304" stroke="#fff" strokeWidth="4" strokeLinecap="round" fill="none" opacity=".75" />
           <path className="wave-arm" d="M240 220 Q268 196 270 168" stroke="#FDA126" strokeWidth="14" strokeLinecap="round" fill="none" />
         </g>
 
