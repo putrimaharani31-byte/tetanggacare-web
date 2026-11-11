@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Footer, IntroSplash, Navbar } from './components/Layout.jsx';
+import { Footer, Navbar } from './components/Layout.jsx';
+import IntroSplash from './components/IntroSplash.jsx';
 import { CompanionProfileModal } from './components/Cards.jsx';
 import { Button, Container, Icon, Modal, Toast } from './components/ui.jsx';
 import Home from './pages/Home.jsx';
