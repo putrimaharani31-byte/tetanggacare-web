@@ -84,3 +84,33 @@ export const makeOrderId = () => {
   const z = (x) => String(x).padStart(2, '0');
   return `TC-${String(d.getFullYear()).slice(2)}${z(d.getMonth() + 1)}${z(d.getDate())}-${Math.floor(1000 + Math.random() * 9000)}`;
 };
+import { supabase } from './supabase.js';
+
+// Kirim data pesanan ke Supabase
+export async function saveOrderToDatabase(orderData, priceData) {
+  try {
+    await supabase.from('orders').insert([
+      {
+        id: orderData.id,
+        user_name: orderData.name,
+        service_id: orderData.serviceId,
+        companion_id: orderData.companionId,
+        total_price: priceData?.total || 0,
+        status: 'selesai',
+      },
+    ]);
+  } catch (err) {
+    console.error('Error saving order:', err);
+  }
+}
+
+// Catat log pengunjung ke Supabase
+export async function logUserActivity() {
+  try {
+    await supabase.from('activity_logs').insert([
+      { user_email: 'visitor', action: 'page_view' }
+    ]);
+  } catch (err) {
+    console.error('Error logging visit:', err);
+  }
+}
