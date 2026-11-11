@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-   import { Footer, Navbar } from './components/Layout.jsx';
-   import IntroSplash from './components/IntroSplash.jsx';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Footer, IntroSplash, Navbar } from './components/Layout.jsx';
 import { CompanionProfileModal } from './components/Cards.jsx';
 import { Button, Container, Icon, Modal, Toast } from './components/ui.jsx';
 import Home from './pages/Home.jsx';
@@ -10,10 +9,10 @@ import Booking from './pages/Booking.jsx';
 import Summary from './pages/Summary.jsx';
 import Confirmation from './pages/Confirmation.jsx';
 import About from './pages/About.jsx';
+import AdminDashboard from './pages/AdminDashboard.jsx';
 import { EMPTY_BOOKING } from './data.js';
-import { getCompanion, isBookingComplete, makeOrderId } from './utils.js';
+import { calcPrice, getCompanion, isBookingComplete, makeOrderId, saveOrderToDatabase, logUserActivity } from './utils.js';
 
-// Navigasi memakai hash (#/layanan, #/pesan, ...) agar jalan di hosting statis tanpa pengaturan tambahan
 const readRoute = () => (typeof window === 'undefined' ? '/' : window.location.hash.replace(/^#/, '') || '/');
 
 function EmptyState({ title, desc, action, onAction }) {
@@ -36,6 +35,11 @@ export default function App() {
   const [profileId, setProfileId] = useState(null);
   const [loginOpen, setLoginOpen] = useState(false);
   const [toast, setToast] = useState('');
+
+  // Catat aktivitas pengunjung setiap kali web diakses
+  useEffect(() => {
+    logUserActivity();
+  }, []);
 
   useEffect(() => {
     const onHash = () => setRoute(readRoute());
@@ -89,8 +93,14 @@ export default function App() {
   };
 
   const confirmOrder = () => {
-    setOrder({ ...booking, id: makeOrderId() });
-    setToast('Pemesanan berhasil dibuat! Nomor pesanan sudah tersedia.');
+    const newOrder = { ...booking, id: makeOrderId() };
+    const priceData = calcPrice(booking);
+    setOrder(newOrder);
+
+    // Simpan otomatis ke database Supabase!
+    saveOrderToDatabase(newOrder, priceData);
+
+    setToast('Pemesanan berhasil dibuat! Data tersimpan di database.');
     go('/konfirmasi');
   };
 
@@ -128,6 +138,9 @@ export default function App() {
     case '/tentang':
       page = <About go={go} />;
       break;
+    case '/admin':
+      page = <AdminDashboard go={go} />;
+      break;
     default:
       page = <Home go={go} onChooseService={chooseService} />;
   }
@@ -147,10 +160,10 @@ export default function App() {
         </span>
         <h3 className="mt-4 text-2xl font-extrabold text-ink">Masuk ke TetanggaCare</h3>
         <p className="mt-2 text-muted">
-          Di prototype ini Anda dapat memesan tanpa akun. Akun keluarga (riwayat pesanan, laporan layanan, dan fitur SOS) direncanakan untuk versi aplikasi.
+          Di prototype ini Anda dapat memesan tanpa akun. Fitur dashboard statistik dapat diakses lewat tautan khusus admin.
         </p>
         <div className="mt-6 grid gap-2 sm:grid-cols-2">
-          <Button variant="outline" onClick={() => setLoginOpen(false)}>Tutup</Button>
+          <Button variant="outline" onClick={() => { setLoginOpen(false); go('/admin'); }}>Buka Admin Dashboard</Button>
           <Button onClick={() => { setLoginOpen(false); go('/pesan'); }}>Pesan tanpa akun</Button>
         </div>
       </Modal>
