@@ -93,7 +93,7 @@ export const CATEGORIES = [
   { id: 'lainnya', label: 'Lainnya' },
 ];
 
-export const DURATIONS = [2, 3, 4, 5, 6, 8];
+export const DURATIONS = [1, 2, 3, 4, 5, 6, 8];
 
 export const TIMES = Array.from({ length: 23 }, (_, i) => {
   const minutes = 7 * 60 + i * 30; // 07.00 - 18.00
