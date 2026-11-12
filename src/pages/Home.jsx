@@ -132,8 +132,8 @@ export default function Home({ go, onChooseService }) {
       <section className="pt-16">
         <Container>
           <div className="relative overflow-hidden rounded-[2rem] bg-forest-700 px-6 py-12 text-white md:px-14 md:py-16">
-            <div className="pointer-events-none absolute -right-10 -top-6 rounded-3xl bg-white/95 p-4 opacity-[0.12]">
-              <Logo variant="emblem" className="h-64" />
+            <div className="animate-float pointer-events-none absolute right-12 top-1/2 hidden -translate-y-1/2 rounded-[2rem] bg-white p-6 shadow-2xl shadow-black/20 lg:block">
+              <Logo variant="emblem" className="h-44" />
             </div>
             <div className="relative max-w-xl">
               <h2 className="text-3xl font-extrabold leading-tight md:text-4xl">Tenang bekerja, orang tersayang tetap ada yang menemani.</h2>
