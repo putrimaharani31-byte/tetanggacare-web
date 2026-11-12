@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Footer, Navbar } from './components/Layout.jsx';
 import IntroSplash from './components/IntroSplash.jsx';
+import AdminGate from './components/AdminGate.jsx';
+import MobileTabBar from './components/MobileTabBar.jsx';
 import { CompanionProfileModal } from './components/Cards.jsx';
 import { Button, Container, Icon, Modal, Toast } from './components/ui.jsx';
 import Home from './pages/Home.jsx';
@@ -10,7 +12,6 @@ import Booking from './pages/Booking.jsx';
 import Summary from './pages/Summary.jsx';
 import Confirmation from './pages/Confirmation.jsx';
 import About from './pages/About.jsx';
-import AdminDashboard from './pages/AdminDashboard.jsx';
 import { EMPTY_BOOKING } from './data.js';
 import { calcPrice, getCompanion, isBookingComplete, makeOrderId, saveOrderToDatabase, logUserActivity } from './utils.js';
 
@@ -140,14 +141,14 @@ export default function App() {
       page = <About go={go} />;
       break;
     case '/admin':
-      page = <AdminDashboard go={go} />;
+      page = <AdminGate go={go} />;
       break;
     default:
       page = <Home go={go} onChooseService={chooseService} />;
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col pb-24 lg:pb-0">
       <IntroSplash />
       <Navbar route={route} go={go} onLogin={() => setLoginOpen(true)} />
       <main key={route} className="animate-fade-up flex-1">{page}</main>
@@ -161,14 +162,15 @@ export default function App() {
         </span>
         <h3 className="mt-4 text-2xl font-extrabold text-ink">Masuk ke TetanggaCare</h3>
         <p className="mt-2 text-muted">
-          Di prototype ini Anda dapat memesan tanpa akun. Fitur dashboard statistik dapat diakses lewat tautan khusus admin.
+          Di prototype ini Anda dapat memesan tanpa akun. Dashboard hanya untuk admin dan memerlukan login.
         </p>
         <div className="mt-6 grid gap-2 sm:grid-cols-2">
-          <Button variant="outline" onClick={() => { setLoginOpen(false); go('/admin'); }}>Buka Admin Dashboard</Button>
+          <Button variant="outline" onClick={() => { setLoginOpen(false); go('/admin'); }}>Login Admin</Button>
           <Button onClick={() => { setLoginOpen(false); go('/pesan'); }}>Pesan tanpa akun</Button>
         </div>
       </Modal>
 
+      <MobileTabBar route={route} go={go} />
       <Toast message={toast} onClose={() => setToast('')} />
     </div>
   );
