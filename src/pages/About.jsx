@@ -16,7 +16,7 @@ export default function About({ go }) {
         <div className="grid items-center gap-10 lg:grid-cols-[1.2fr_1fr]">
           <div className="space-y-5 text-lg leading-relaxed text-muted">
             <p>
-              <span className="font-bold text-ink">{BRAND.name}</span> hadir untuk membantu keluarga memperoleh pendampingan yang lebih mudah, praktis, dan terpercaya bagi anggota keluarga yang membutuhkan, terutama lansia dan penyandang disabilitas.
+              <span className="font-bold text-ink">{BRAND.name}</span> hadir untuk membantu keluarga memperoleh pendampingan yang lebih mudah, praktis, dan terpercaya bagi orang tua dan lansia di keluarga.
             </p>
             <p>
               Banyak keluarga ingin selalu menemani orang tuanya kontrol ke rumah sakit atau beraktivitas, tetapi jadwalnya sering bertepatan dengan jam kerja atau kuliah. Mencari pendamping yang bisa dipercaya dalam waktu singkat juga tidak mudah.
@@ -46,7 +46,7 @@ export default function About({ go }) {
           {[
             ['pin', 'Wilayah uji coba', `${BRAND.city} dan sekitarnya`],
             ['clock', 'Sistem layanan', 'Per jadwal & durasi'],
-            ['users', 'Untuk siapa', 'Lansia, penyandang disabilitas, dan keluarga'],
+            ['users', 'Untuk siapa', 'Lansia dan keluarganya'],
           ].map(([icon, k, v]) => (
             <div key={k} className="flex items-start gap-3">
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/15">
