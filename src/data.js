@@ -1,42 +1,65 @@
 // =====================================================================
 //  DATA TETANGGACARE — semua data di file ini adalah DUMMY / SIMULASI.
-//  Ubah teks, harga, dan profil di sini tanpa perlu menyentuh komponen.
+//  Ubah teks, harga, lokasi, dan profil di sini tanpa menyentuh komponen.
 // =====================================================================
 
 export const BRAND = {
   name: 'TetanggaCare',
   tagline: 'Teman dan Pendamping untuk Keluarga.',
   city: 'Depok',
-  // Logo: simpan file logo di folder public/ dengan nama logo.png.
-  // Angka crop = posisi gambar di dalam file (x, y, lebar, tinggi) dalam piksel,
-  // disesuaikan dengan file logo 1536x1024 yang dipakai sekarang.
+  // Logo: file public/logo.png. Angka crop = posisi gambar di dalam file (x, y, lebar, tinggi) dalam piksel.
   logo: {
     src: '/logo.png',
     imageWidth: 1536,
     imageHeight: 1024,
-    full: [141, 152, 1255, 719],   // logo lengkap (ikon + tulisan)
-    emblem: [437, 152, 652, 516],  // hanya ikon rumah
+    full: [141, 152, 1255, 719],
+    emblem: [437, 152, 652, 516],
   },
 };
 
-// Harga SIMULASI untuk prototype. Ubah di sini.
-//  mode 'flat'   -> satu tarif dasar (basePrice)
-//  mode 'perJam' -> hourlyRate x durasi
+// ---------------- HARGA (simulasi, ubah di sini) ----------------
 export const PRICING = {
-  mode: 'perJam',
-  basePrice: 110000,
-  hourlyRate: 40000,
-  serviceFee: 0,
+  mode: 'perJam',     // 'perJam' = tarif x durasi, 'flat' = satu tarif dasar
+  basePrice: 110000,  // dipakai jika mode 'flat'
+  hourlyRate: 40000,  // tarif pendampingan per jam
+  serviceFee: 0,      // biaya layanan platform
 };
 
+// Ongkos kedatangan pendamping (simulasi).
+// Jarak = garis lurus dari kecamatan pendamping ke kecamatan lansia (perkiraan, bukan rute jalan).
+export const TRANSPORT = {
+  freeKm: 3,        // jarak sekali jalan yang sudah termasuk tarif
+  perKm: 3000,      // tarif per km kelebihan jarak
+  roundTrip: true,  // dihitung pulang-pergi (x2)
+};
+
+// Rencana untuk tahap berikutnya (belum aktif di formulir)
+export const EXTENSION = { minutes: 30, price: 20000 };
+
+// ---------------- WILAYAH (kecamatan di Depok, koordinat perkiraan) ----------------
+export const DISTRICTS = [
+  { id: 'beji', name: 'Beji', lat: -6.375, lng: 106.818 },
+  { id: 'bojongsari', name: 'Bojongsari', lat: -6.395, lng: 106.745 },
+  { id: 'cilodong', name: 'Cilodong', lat: -6.43, lng: 106.84 },
+  { id: 'cimanggis', name: 'Cimanggis', lat: -6.37, lng: 106.865 },
+  { id: 'cinere', name: 'Cinere', lat: -6.335, lng: 106.785 },
+  { id: 'cipayung', name: 'Cipayung', lat: -6.43, lng: 106.8 },
+  { id: 'limo', name: 'Limo', lat: -6.365, lng: 106.775 },
+  { id: 'pancoranmas', name: 'Pancoran Mas', lat: -6.405, lng: 106.815 },
+  { id: 'sawangan', name: 'Sawangan', lat: -6.405, lng: 106.76 },
+  { id: 'sukmajaya', name: 'Sukmajaya', lat: -6.395, lng: 106.84 },
+  { id: 'tapos', name: 'Tapos', lat: -6.42, lng: 106.88 },
+];
+
+// ---------------- LAYANAN (fokus lansia) ----------------
 export const SERVICES = [
   {
     id: 'teman',
     icon: 'chat',
     title: 'Teman & Pendamping',
-    short: 'Menemani aktivitas sehari-hari, berbincang, dan membantu aktivitas ringan.',
+    short: 'Menemani lansia beraktivitas, berbincang, dan membantu aktivitas ringan.',
     description:
-      'Pendamping hadir sebagai teman yang menemani anggota keluarga Anda beraktivitas, berbincang, dan tetap aktif bersosialisasi.',
+      'Pendamping hadir sebagai teman bagi orang tua Anda: menemani berbincang, beraktivitas, dan tetap aktif bersosialisasi.',
     includes: [
       'Menemani berbincang dan beraktivitas bersama',
       'Menemani jalan pagi, berbelanja, atau kegiatan di lingkungan',
@@ -50,32 +73,32 @@ export const SERVICES = [
     id: 'berobat',
     icon: 'hospital',
     title: 'Pendampingan Berobat',
-    short: 'Menemani ke rumah sakit atau fasilitas kesehatan, termasuk pendaftaran dan antrean.',
+    short: 'Menemani lansia ke rumah sakit atau klinik, termasuk pendaftaran dan antrean.',
     description:
-      'Pendamping menemani dari rumah hingga selesai berobat, membantu urusan administrasi, sehingga keluarga tetap tenang walau tidak bisa hadir.',
+      'Pendamping menemani orang tua Anda dari rumah hingga selesai berobat dan membantu urusan administrasi, sehingga keluarga tetap tenang walau tidak bisa hadir.',
     includes: [
       'Menemani perjalanan pergi dan pulang',
       'Membantu pendaftaran, termasuk alur JKN/BPJS dan asuransi',
       'Menemani selama antrean dan perpindahan ruangan',
       'Mencatat informasi kunjungan untuk disampaikan ke keluarga',
     ],
-    suitable: 'Lansia atau penyandang disabilitas dengan jadwal kontrol rutin.',
+    suitable: 'Lansia dengan jadwal kontrol rutin.',
     color: 'forest',
   },
   {
     id: 'rumah',
     icon: 'home',
     title: 'Pendampingan di Rumah',
-    short: 'Menemani dan membantu aktivitas ringan di rumah sesuai ruang lingkup layanan.',
+    short: 'Menemani lansia di rumah dan membantu aktivitas ringan sesuai ruang lingkup layanan.',
     description:
-      'Pendamping datang ke rumah untuk menemani dan membantu aktivitas ringan, sehingga anggota keluarga tidak sendirian saat keluarga bekerja.',
+      'Pendamping datang ke rumah untuk menemani dan membantu aktivitas ringan, sehingga orang tua tidak sendirian saat keluarga bekerja.',
     includes: [
       'Menemani di rumah selama durasi yang dipesan',
       'Membantu aktivitas ringan, seperti menyiapkan makanan sederhana',
       'Menemani hobi: membaca, berkebun, atau menonton bersama',
       'Laporan singkat kegiatan untuk keluarga',
     ],
-    suitable: 'Keluarga yang bekerja dan tidak ingin orang tersayang sendirian.',
+    suitable: 'Keluarga yang bekerja dan tidak ingin orang tua sendirian.',
     color: 'leaf',
   },
 ];
@@ -87,13 +110,20 @@ export const NOT_INCLUDED = [
   'Tindakan medis lainnya',
 ];
 
-export const CATEGORIES = [
-  { id: 'lansia', label: 'Lansia' },
-  { id: 'disabilitas', label: 'Penyandang disabilitas' },
-  { id: 'lainnya', label: 'Lainnya' },
+// Kebutuhan bantuan lansia (boleh pilih lebih dari satu)
+export const ASSIST_NEEDS = [
+  { id: 'jalan', label: 'Perlu bantuan berjalan' },
+  { id: 'kursiroda', label: 'Menggunakan kursi roda' },
+  { id: 'tongkat', label: 'Menggunakan tongkat atau walker' },
+  { id: 'dengar', label: 'Pendengaran kurang' },
+  { id: 'lihat', label: 'Penglihatan kurang' },
+  { id: 'komunikasi', label: 'Perlu komunikasi pelan dan sabar' },
+  { id: 'lupa', label: 'Mudah lupa, perlu diingatkan jadwal' },
 ];
 
-export const DURATIONS = [1, 2, 3, 4, 5, 6, 8];
+export const RELATIONS = ['Anak', 'Cucu', 'Menantu', 'Saudara', 'Lainnya'];
+
+export const DURATIONS = [1, 2, 3, 4, 5, 6, 7, 8];
 
 export const TIMES = Array.from({ length: 23 }, (_, i) => {
   const minutes = 7 * 60 + i * 30; // 07.00 - 18.00
@@ -106,6 +136,7 @@ export const COMPANIONS = [
     id: 'sari',
     name: 'Sari Wulandari',
     age: 29,
+    district: 'beji',
     location: 'Beji, Depok',
     experienceYears: 4,
     experience: '4 tahun mendampingi lansia kontrol rutin di RS dan puskesmas.',
@@ -122,22 +153,24 @@ export const COMPANIONS = [
     id: 'bima',
     name: 'Bima Prasetya',
     age: 34,
+    district: 'pancoranmas',
     location: 'Pancoran Mas, Depok',
     experienceYears: 6,
-    experience: '6 tahun sebagai pendamping penyandang disabilitas dan lansia.',
-    skills: ['Membantu berpindah dari kursi roda', 'Pendampingan disabilitas', 'Bahasa isyarat dasar'],
+    experience: '6 tahun mendampingi lansia pengguna kursi roda dan alat bantu jalan.',
+    skills: ['Membantu berpindah dari kursi roda', 'Pendampingan lansia dengan alat bantu', 'Bahasa isyarat dasar'],
     services: ['berobat', 'teman', 'rumah'],
     languages: ['Indonesia', 'Jawa'],
     availability: 'Setiap hari, 08.00 - 18.00',
     rating: 4.8,
     reviews: 96,
-    bio: 'Tenang dan sigap. Berpengalaman mendampingi pengguna kursi roda dalam perjalanan dan aktivitas di luar rumah.',
+    bio: 'Tenang dan sigap. Berpengalaman mendampingi lansia pengguna kursi roda dalam perjalanan dan aktivitas di luar rumah.',
     look: { skin: '#C98E6A', style: 'short', hair: '#2B2321', shirt: '#078354', bg: '#EEF7F2' },
   },
   {
     id: 'maya',
     name: 'Maya Lestari',
     age: 26,
+    district: 'sukmajaya',
     location: 'Sukmajaya, Depok',
     experienceYears: 2,
     experience: '2 tahun menjadi relawan pendamping lansia di komunitas.',
@@ -154,22 +187,24 @@ export const COMPANIONS = [
     id: 'andra',
     name: 'Andra Saputra',
     age: 31,
+    district: 'cimanggis',
     location: 'Cimanggis, Depok',
     experienceYears: 3,
-    experience: '3 tahun mendampingi kunjungan berobat dan cek laboratorium.',
+    experience: '3 tahun mendampingi lansia berobat dan cek laboratorium.',
     skills: ['Pengaturan jadwal kunjungan', 'Pencatatan informasi untuk keluarga', 'Navigasi rumah sakit'],
     services: ['berobat'],
     languages: ['Indonesia'],
     availability: 'Senin - Sabtu, 06.00 - 15.00',
     rating: 4.7,
     reviews: 71,
-    bio: 'Tepat waktu dan rapi. Membantu keluarga memantau kunjungan berobat lewat catatan dan kabar yang jelas.',
+    bio: 'Tepat waktu dan rapi. Membantu keluarga memantau kunjungan berobat orang tua lewat catatan dan kabar yang jelas.',
     look: { skin: '#D9A07A', style: 'short', hair: '#1F1A18', shirt: '#066649', bg: '#EEF7F2' },
   },
   {
     id: 'dewi',
     name: 'Dewi Anggraini',
     age: 38,
+    district: 'cinere',
     location: 'Cinere, Depok',
     experienceYears: 8,
     experience: '8 tahun menemani lansia di rumah dan kegiatan keluarga.',
@@ -179,33 +214,38 @@ export const COMPANIONS = [
     availability: 'Senin - Sabtu, 07.00 - 16.00',
     rating: 5.0,
     reviews: 143,
-    bio: 'Keibuan dan telaten. Membuat suasana rumah tetap nyaman dan menyenangkan selama keluarga bekerja.',
+    bio: 'Keibuan dan telaten. Membuat suasana rumah tetap nyaman dan menyenangkan bagi lansia selama keluarga bekerja.',
     look: { skin: '#E3AD87', style: 'bun', hair: '#2E2420', shirt: '#F28C6B', bg: '#FFF1EA' },
   },
   {
     id: 'rizky',
     name: 'Rizky Hidayat',
     age: 27,
+    district: 'tapos',
     location: 'Tapos, Depok',
     experienceYears: 2,
     experience: '2 tahun mendampingi lansia berobat dan beraktivitas di luar rumah.',
-    skills: ['Pendampingan berobat', 'Menemani olahraga ringan', 'Teman berbincang'],
+    skills: ['Pendampingan berobat', 'Menemani olahraga ringan lansia', 'Teman berbincang'],
     services: ['berobat', 'teman'],
     languages: ['Indonesia', 'Betawi'],
     availability: 'Setiap hari, 07.00 - 19.00',
     rating: 4.8,
     reviews: 39,
-    bio: 'Ramah dan sabar. Senang mendengarkan cerita dan memastikan setiap kegiatan berjalan nyaman.',
+    bio: 'Ramah dan sabar. Senang mendengarkan cerita lansia dan memastikan setiap kegiatan berjalan nyaman.',
     look: { skin: '#C78B66', style: 'short', hair: '#231C1A', shirt: '#FDA126', bg: '#FFF5E6' },
   },
 ];
 
 export const EMPTY_BOOKING = {
   serviceId: '',
-  name: '',
-  category: '',
-  categoryOther: '',
+  elderName: '',
+  elderAge: '',
+  needs: [],
+  district: '',
   address: '',
+  familyName: '',
+  familyPhone: '',
+  familyRelation: '',
   date: '',
   time: '',
   duration: '',
