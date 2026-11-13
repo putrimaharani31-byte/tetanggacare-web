@@ -12,6 +12,8 @@ import Booking from './pages/Booking.jsx';
 import Summary from './pages/Summary.jsx';
 import Confirmation from './pages/Confirmation.jsx';
 import About from './pages/About.jsx';
+import Pricing from './pages/Pricing.jsx';
+import Procedures from './pages/Procedures.jsx';
 import { EMPTY_BOOKING } from './data.js';
 import { calcPrice, getCompanion, isBookingComplete, makeOrderId, saveOrderToDatabase, logUserActivity } from './utils.js';
 
@@ -38,7 +40,7 @@ export default function App() {
   const [loginOpen, setLoginOpen] = useState(false);
   const [toast, setToast] = useState('');
 
-  // Catat aktivitas pengunjung setiap kali web diakses
+  // Catat kunjungan setiap kali web dibuka
   useEffect(() => {
     logUserActivity();
   }, []);
@@ -96,13 +98,10 @@ export default function App() {
 
   const confirmOrder = () => {
     const newOrder = { ...booking, id: makeOrderId() };
-    const priceData = calcPrice(booking);
     setOrder(newOrder);
-
-    // Simpan otomatis ke database Supabase!
-    saveOrderToDatabase(newOrder, priceData);
-
-    setToast('Pemesanan berhasil dibuat! Data tersimpan di database.');
+    // Simpan otomatis ke database Supabase
+    saveOrderToDatabase(newOrder, calcPrice(newOrder));
+    setToast('Pemesanan berhasil dibuat!');
     go('/konfirmasi');
   };
 
@@ -117,6 +116,12 @@ export default function App() {
     case '/layanan':
       page = <Services go={go} onChooseService={chooseService} />;
       break;
+    case '/harga':
+      page = <Pricing go={go} />;
+      break;
+    case '/prosedur':
+      page = <Procedures go={go} />;
+      break;
     case '/pendamping':
       page = <Companions selectedId={booking.companionId} onView={setProfileId} onChoose={chooseCompanion} />;
       break;
@@ -125,7 +130,7 @@ export default function App() {
       break;
     case '/ringkasan':
       page = isBookingComplete(booking) ? (
-        <Summary booking={booking} onEdit={() => go('/pesan')} onConfirm={confirmOrder} />
+        <Summary booking={booking} onEdit={() => go('/pesan')} onConfirm={confirmOrder} go={go} />
       ) : (
         <EmptyState title="Belum ada data pesanan" desc="Isi formulir pemesanan terlebih dahulu untuk melihat ringkasan." action="Isi Formulir Pemesanan" onAction={() => go('/pesan')} />
       );
