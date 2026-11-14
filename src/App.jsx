@@ -4,7 +4,7 @@ import IntroSplash from './components/IntroSplash.jsx';
 import AdminGate from './components/AdminGate.jsx';
 import MobileTabBar from './components/MobileTabBar.jsx';
 import { CompanionProfileModal } from './components/Cards.jsx';
-import { Button, Container, Icon, Modal, Toast } from './components/ui.jsx';
+import { Button, Container, Icon, Toast } from './components/ui.jsx';
 import Home from './pages/Home.jsx';
 import Services from './pages/Services.jsx';
 import Companions from './pages/Companions.jsx';
@@ -37,7 +37,6 @@ export default function App() {
   const [booking, setBooking] = useState(EMPTY_BOOKING);
   const [order, setOrder] = useState(null);
   const [profileId, setProfileId] = useState(null);
-  const [loginOpen, setLoginOpen] = useState(false);
   const [toast, setToast] = useState('');
 
   // Catat kunjungan setiap kali web dibuka
@@ -145,6 +144,7 @@ export default function App() {
     case '/tentang':
       page = <About go={go} />;
       break;
+    case '/login':
     case '/admin':
       page = <AdminGate go={go} />;
       break;
@@ -155,25 +155,11 @@ export default function App() {
   return (
     <div className="flex min-h-screen flex-col pb-24 lg:pb-0">
       <IntroSplash />
-      <Navbar route={route} go={go} onLogin={() => setLoginOpen(true)} />
+      <Navbar route={route} go={go} onLogin={() => go('/login')} />
       <main key={route} className="animate-fade-up flex-1">{page}</main>
       <Footer go={go} />
 
       <CompanionProfileModal companion={getCompanion(profileId)} onClose={() => setProfileId(null)} onChoose={chooseCompanion} />
-
-      <Modal open={loginOpen} onClose={() => setLoginOpen(false)} label="Masuk">
-        <span className="grid h-14 w-14 place-items-center rounded-2xl bg-forest-50 text-forest-700">
-          <Icon name="user" className="h-7 w-7" />
-        </span>
-        <h3 className="mt-4 text-2xl font-extrabold text-ink">Masuk ke TetanggaCare</h3>
-        <p className="mt-2 text-muted">
-          Di prototype ini Anda dapat memesan tanpa akun. Dashboard hanya untuk admin dan memerlukan login.
-        </p>
-        <div className="mt-6 grid gap-2 sm:grid-cols-2">
-          <Button variant="outline" onClick={() => { setLoginOpen(false); go('/admin'); }}>Login Admin</Button>
-          <Button onClick={() => { setLoginOpen(false); go('/pesan'); }}>Pesan tanpa akun</Button>
-        </div>
-      </Modal>
 
       <MobileTabBar route={route} go={go} />
       <Toast message={toast} onClose={() => setToast('')} />
