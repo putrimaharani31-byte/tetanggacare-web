@@ -217,3 +217,69 @@ export async function updateOrderStatus(id, status, extra = {}) {
   if (error) console.error('Gagal mengubah status:', error.message);
   return { error };
 }
+
+
+/* ---------------- Riwayat pesanan ---------------- */
+// Admin: semua pesanan (terbaru di atas)
+export async function fetchAllOrders() {
+  const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+  if (error) console.error('Gagal mengambil riwayat:', error.message);
+  return { data: data || [], error };
+}
+
+export const districtIdByName = (name) => DISTRICTS.find((d) => d.name === name)?.id;
+
+// Hitung ulang ongkos & total jika pesanan dipindah ke pendamping lain
+export function reassignQuote(row, companionId) {
+  const companion = getCompanion(companionId);
+  const km = companionDistance(companion, districtIdByName(row.district));
+  const t = transportFee(km);
+  const hours = Number(row.duration_hours) || 0;
+  const base = PRICING.mode === 'perJam' ? PRICING.hourlyRate * hours : PRICING.basePrice;
+  return { km, fee: t.fee, total: base + t.fee + (PRICING.serviceFee || 0) };
+}
+
+export async function adminReassign(row, companionId) {
+  const q = reassignQuote(row, companionId);
+  const { error } = await supabase.rpc('admin_reassign', {
+    p_id: row.id,
+    p_companion: companionId,
+    p_distance: q.km,
+    p_fee: q.fee,
+    p_total: q.total,
+  });
+  if (error) console.error('Gagal memindahkan pesanan:', error.message);
+  return { error };
+}
+
+// Pemesan: cek pesanan dengan nomor pesanan + nomor HP keluarga
+export async function checkOrder(id, phone) {
+  const { data, error } = await supabase.rpc('check_order', { p_id: id.trim().toUpperCase(), p_phone: phone });
+  if (error) console.error('Gagal cek pesanan:', error.message);
+  return { order: data?.[0] || null, error };
+}
+
+// Pesanan Saya: daftar nomor pesanan yang dibuat dari perangkat ini
+const MY_ORDERS_KEY = 'tc_my_orders';
+export function getMyOrders() {
+  try {
+    return JSON.parse(localStorage.getItem(MY_ORDERS_KEY) || '[]');
+  } catch {
+    return [];
+  }
+}
+export function saveMyOrder(entry) {
+  try {
+    const list = getMyOrders().filter((o) => o.id !== entry.id);
+    localStorage.setItem(MY_ORDERS_KEY, JSON.stringify([entry, ...list].slice(0, 30)));
+  } catch {
+    /* penyimpanan browser tidak tersedia */
+  }
+}
+export function removeMyOrder(id) {
+  try {
+    localStorage.setItem(MY_ORDERS_KEY, JSON.stringify(getMyOrders().filter((o) => o.id !== id)));
+  } catch {
+    /* abaikan */
+  }
+}
