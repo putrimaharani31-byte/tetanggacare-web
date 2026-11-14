@@ -1,5 +1,5 @@
 import { supabase } from './supabase.js';
-import { ASSIST_NEEDS, COMPANIONS, DISTRICTS, PRICING, SERVICES, TRANSPORT } from './data.js';
+import { ASSIST_NEEDS, COMPANIONS, COMPANION_SHARE, DISTRICTS, DURATIONS, PRICING, SERVICES, SERVICE_HOURS, TRANSPORT } from './data.js';
 
 /* ---------------- Format ---------------- */
 export const rupiah = (n) =>
@@ -20,6 +20,15 @@ export const endTime = (time, hours) => {
   const r = total % 1440;
   return `${String(Math.floor(r / 60)).padStart(2, '0')}.${String(r % 60).padStart(2, '0')}${next}`;
 };
+
+/* ---------------- Jam layanan ---------------- */
+const toMinutes = (t) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5));
+
+// Durasi terpanjang supaya layanan selesai paling lambat jam tutup
+export const maxDurationFor = (time) =>
+  time ? Math.min(Math.max(...DURATIONS), Math.floor((toMinutes(SERVICE_HOURS.close) - toMinutes(time)) / 60)) : Math.max(...DURATIONS);
+
+export const availableDurations = (time) => DURATIONS.filter((d) => d <= maxDurationFor(time));
 
 export const dateFromToday = (days) => {
   const d = new Date();
@@ -115,6 +124,8 @@ export function validateBooking(b) {
   else if (b.date < dateFromToday(1)) e.date = 'Tanggal layanan paling cepat besok.';
   if (!b.time) e.time = 'Pilih waktu mulai.';
   if (!b.duration) e.duration = 'Pilih durasi layanan.';
+  else if (b.time && Number(b.duration) > maxDurationFor(b.time))
+    e.duration = `Layanan selesai paling lambat pukul ${fmtTime(SERVICE_HOURS.close)}. Pilih durasi maksimal ${maxDurationFor(b.time)} jam.`;
   if (!b.companionId) e.companionId = 'Pilih pendamping, atau biarkan TetanggaCare memilihkan.';
   return e;
 }
@@ -125,6 +136,22 @@ export const makeOrderId = () => {
   const d = new Date();
   const z = (x) => String(x).padStart(2, '0');
   return `TC-${String(d.getFullYear()).slice(2)}${z(d.getMonth() + 1)}${z(d.getDate())}-${Math.floor(1000 + Math.random() * 9000)}`;
+};
+
+/* ---------------- Honor pendamping ---------------- */
+// Honor = bagian pendamping dari tarif x durasi + ongkos kedatangan (100%)
+export function companionPayout(row) {
+  const hours = Number(row.duration_hours) || 0;
+  const base = PRICING.mode === 'perJam' ? PRICING.hourlyRate * hours : PRICING.basePrice;
+  const share = Math.round(base * COMPANION_SHARE);
+  const transport = Number(row.transport_fee) || 0;
+  return { share, transport, total: share + transport };
+}
+
+export const waLink = (phone) => {
+  const p = normalizePhone(phone || '');
+  const intl = p.startsWith('+62') ? p.slice(1) : p.startsWith('0') ? `62${p.slice(1)}` : p;
+  return `https://wa.me/${intl}`;
 };
 
 /* ---------------- Supabase ---------------- */
@@ -158,4 +185,35 @@ export async function saveOrderToDatabase(order, price) {
 export async function logUserActivity() {
   const { error } = await supabase.from('activity_logs').insert({ user_email: 'pengunjung', action: 'buka_web' });
   if (error) console.error('Gagal mencatat kunjungan:', error.message);
+}
+
+// Status pesanan
+export const ORDER_STATUS = {
+  'menunggu konfirmasi': { label: 'Menunggu konfirmasi', tone: 'sun' },
+  diterima: { label: 'Diterima pendamping', tone: 'forest' },
+  berlangsung: { label: 'Layanan berlangsung', tone: 'leaf' },
+  selesai: { label: 'Selesai', tone: 'muted' },
+  ditolak: { label: 'Ditolak, dicarikan pendamping lain', tone: 'red' },
+};
+export const statusInfo = (s) => ORDER_STATUS[s] || (s ? { label: s, tone: 'muted' } : ORDER_STATUS['menunggu konfirmasi']);
+
+export async function fetchCompanionOrders(companionId) {
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('companion_id', companionId)
+    .order('service_date', { ascending: true })
+    .order('start_time', { ascending: true });
+  if (error) console.error('Gagal mengambil pesanan:', error.message);
+  return { data: data || [], error };
+}
+
+const STATUS_TIME = { diterima: 'accepted_at', berlangsung: 'started_at', selesai: 'finished_at', ditolak: 'rejected_at' };
+
+export async function updateOrderStatus(id, status, extra = {}) {
+  const patch = { status, ...extra };
+  if (STATUS_TIME[status]) patch[STATUS_TIME[status]] = new Date().toISOString();
+  const { error } = await supabase.from('orders').update(patch).eq('id', id);
+  if (error) console.error('Gagal mengubah status:', error.message);
+  return { error };
 }
