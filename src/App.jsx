@@ -14,8 +14,9 @@ import Confirmation from './pages/Confirmation.jsx';
 import About from './pages/About.jsx';
 import Pricing from './pages/Pricing.jsx';
 import Procedures from './pages/Procedures.jsx';
+   import MyOrders from './pages/MyOrders.jsx';
 import { EMPTY_BOOKING } from './data.js';
-import { calcPrice, getCompanion, isBookingComplete, makeOrderId, saveOrderToDatabase, logUserActivity } from './utils.js';
+   import { calcPrice, getCompanion, isBookingComplete, makeOrderId, normalizePhone, saveMyOrder, saveOrderToDatabase, logUserActivity } from './utils.js';
 
 const readRoute = () => (typeof window === 'undefined' ? '/' : window.location.hash.replace(/^#/, '') || '/');
 
@@ -100,6 +101,7 @@ export default function App() {
     setOrder(newOrder);
     // Simpan otomatis ke database Supabase
     saveOrderToDatabase(newOrder, calcPrice(newOrder));
+           saveMyOrder({ id: newOrder.id, phone: normalizePhone(newOrder.familyPhone) });
     setToast('Pemesanan berhasil dibuat!');
     go('/konfirmasi');
   };
@@ -141,7 +143,9 @@ export default function App() {
         <EmptyState title="Belum ada pesanan" desc="Pesanan yang sudah dikonfirmasi akan tampil di sini." action="Pesan Pendamping" onAction={() => go('/pesan')} />
       );
       break;
-    case '/tentang':
+          case '/pesanan-saya':
+         page = <MyOrders go={go} />;
+         break; case '/tentang':
       page = <About go={go} />;
       break;
     case '/login':
