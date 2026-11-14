@@ -1,5 +1,5 @@
 import { Button, Container, Icon, IconBadge, PageHeader } from '../components/ui.jsx';
-import { DURATIONS, EXTENSION, PRICING, TRANSPORT } from '../data.js';
+import { ADMIN_HOURS, DURATIONS, EXTENSION, PRICING, SERVICE_HOURS, TRANSPORT } from '../data.js';
 import { rupiah, transportFee } from '../utils.js';
 
 const INCLUDED = [
@@ -35,6 +35,11 @@ export default function Pricing({ go }) {
               {PRICING.mode === 'perJam' && <span className="text-lg font-semibold text-white/80"> / jam</span>}
             </p>
             <p className="mt-3 text-white/80">Berlaku untuk ketiga layanan: Teman & Pendamping, Pendampingan Berobat, dan Pendampingan di Rumah.</p>
+            <div className="mt-5 grid gap-2 rounded-2xl bg-white/10 p-4 text-sm">
+              <p className="flex items-center gap-2"><Icon name="clock" className="h-4 w-4 shrink-0" /> Jam layanan {SERVICE_HOURS.label}</p>
+              <p className="flex items-center gap-2"><Icon name="calendar" className="h-4 w-4 shrink-0" /> Durasi 1–8 jam, selesai paling lambat pukul 20.00</p>
+              <p className="flex items-center gap-2"><Icon name="bell" className="h-4 w-4 shrink-0" /> Konfirmasi admin pukul {ADMIN_HOURS}</p>
+            </div>
             <Button variant="accent" size="lg" className="mt-6 w-full sm:w-auto" onClick={() => go('/pesan')}>
               Pesan Pendamping <Icon name="arrowRight" className="h-5 w-5" />
             </Button>
@@ -115,7 +120,7 @@ export default function Pricing({ go }) {
             <span className="rounded-full bg-sun-50 px-2.5 py-0.5 text-xs font-bold text-[#B86B00]">Rancangan</span>
           </div>
           <p className="mt-2 text-muted">
-            Jika layanan perlu ditambah, pendamping mengajukan perpanjangan {EXTENSION.minutes} menit seharga {rupiah(EXTENSION.price)}. Waktu baru ditambah setelah keluarga menyetujui biayanya.
+            Jika layanan perlu ditambah, pendamping mengajukan perpanjangan {EXTENSION.minutes} menit seharga {rupiah(EXTENSION.price)}. Waktu baru ditambah setelah keluarga dan pendamping setuju, dan layanan tetap selesai paling lambat pukul 20.00.
           </p>
         </section>
       </Container>
