@@ -8,7 +8,8 @@ const LINKS = [
   { label: 'Harga', path: '/harga' },
   { label: 'Pendamping', path: '/pendamping' },
   { label: 'Prosedur', path: '/prosedur' },
-  { label: 'Tentang Kami', path: '/tentang' },
+  { label: 'Pesanan Saya', path: '/pesanan-saya' },
+  { label: 'Tentang', path: '/tentang' },
 ];
 
 export function Navbar({ route, go, onLogin }) {
