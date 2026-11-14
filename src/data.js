@@ -36,6 +36,19 @@ export const TRANSPORT = {
 // Rencana untuk tahap berikutnya (belum aktif di formulir)
 export const EXTENSION = { minutes: 30, price: 20000 };
 
+// Bagian pendamping dari tarif pendampingan. Ongkos kedatangan 100% untuk pendamping.
+export const COMPANION_SHARE = 0.8;
+
+// ---------------- JAM LAYANAN ----------------
+export const SERVICE_HOURS = { open: '07:00', close: '20:00', label: '07.00–20.00 setiap hari' };
+// Jam admin memproses konfirmasi pesanan
+export const ADMIN_HOURS = '07.00–20.00 setiap hari';
+
+// ---------------- AKUN LOGIN ----------------
+// Semua akun di Supabase memakai akhiran ini. Username "admin" = admin, username = id pendamping = pendamping.
+export const LOGIN_DOMAIN = 'admin.tetanggacare.app';
+export const ADMIN_USERNAME = 'admin';
+
 // ---------------- WILAYAH (kecamatan di Depok, koordinat perkiraan) ----------------
 export const DISTRICTS = [
   { id: 'beji', name: 'Beji', lat: -6.375, lng: 106.818 },
@@ -125,8 +138,10 @@ export const RELATIONS = ['Anak', 'Cucu', 'Menantu', 'Saudara', 'Lainnya'];
 
 export const DURATIONS = [1, 2, 3, 4, 5, 6, 7, 8];
 
-export const TIMES = Array.from({ length: 23 }, (_, i) => {
-  const minutes = 7 * 60 + i * 30; // 07.00 - 18.00
+// Pilihan jam mulai: tiap 30 menit, dari jam buka sampai 1 jam sebelum tutup
+const toMin = (t) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5));
+export const TIMES = Array.from({ length: (toMin(SERVICE_HOURS.close) - 60 - toMin(SERVICE_HOURS.open)) / 30 + 1 }, (_, i) => {
+  const minutes = toMin(SERVICE_HOURS.open) + i * 30;
   return `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
 });
 
