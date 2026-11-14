@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../supabase.js';
 import AdminDashboard from '../pages/AdminDashboard.jsx';
 import CompanionDashboard from '../pages/CompanionDashboard.jsx';
+   import AdminOrders from '../pages/AdminOrders.jsx';
 import { Button, Container, Field, Icon, Logo, inputClass } from './ui.jsx';
 import { ADMIN_USERNAME, LOGIN_DOMAIN } from '../data.js';
 import { getCompanion } from '../utils.js';
@@ -79,6 +80,7 @@ export default function AdminGate({ go }) {
           <Button variant="outline" size="sm" onClick={logout}>Keluar</Button>
         </Container>
         <AdminDashboard go={go} />
+                   <AdminOrders />
       </>
     );
   }
