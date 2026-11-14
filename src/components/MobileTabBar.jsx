@@ -5,12 +5,12 @@ const TABS = [
   { label: 'Beranda', path: '/', icon: 'home' },
   { label: 'Layanan', path: '/layanan', icon: 'heart' },
   { label: 'Pesan', path: '/pesan', icon: 'calendar', main: true },
-  { label: 'Pendamping', path: '/pendamping', icon: 'users' },
-  { label: 'Tentang', path: '/tentang', icon: 'info' },
+  { label: 'Harga', path: '/harga', icon: 'wallet' },
+  { label: 'Pesanan', path: '/pesanan-saya', icon: 'file' },
 ];
 
 export default function MobileTabBar({ route, go }) {
-  if (route === '/admin') return null;
+  if (route === '/admin' || route === '/login') return null;
   return (
     <nav
       className="fixed inset-x-0 bottom-0 z-40 border-t border-forest-100 bg-white/95 backdrop-blur-md lg:hidden"
