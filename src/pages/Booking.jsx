@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Avatar, Button, Container, Field, Icon, IconBadge, PageHeader, StarRating, inputClass } from '../components/ui.jsx';
-import { ASSIST_NEEDS, COMPANIONS, DISTRICTS, DURATIONS, RELATIONS, SERVICES, TIMES } from '../data.js';
-import { calcPrice, dateFromToday, distanceText, endTime, fmtTime, getCompanion, getService, resolveCompanion, rupiah, sortByDistance, transportFee, validateBooking } from '../utils.js';
+import { ADMIN_HOURS, ASSIST_NEEDS, COMPANIONS, DISTRICTS, RELATIONS, SERVICES, SERVICE_HOURS, TIMES } from '../data.js';
+import { availableDurations, calcPrice, dateFromToday, distanceText, maxDurationFor, endTime, fmtTime, getCompanion, getService, resolveCompanion, rupiah, sortByDistance, transportFee, validateBooking } from '../utils.js';
 
 const FIELD_ORDER = ['serviceId', 'elderName', 'elderAge', 'district', 'address', 'familyName', 'familyPhone', 'familyRelation', 'date', 'time', 'duration', 'companionId'];
 
@@ -45,6 +45,23 @@ export default function Booking({ booking: b, onChange, onSubmit, onViewCompanio
     set(c && !c.services.includes(id) ? { serviceId: id, companionId: '' } : { serviceId: id });
   };
 
+  const [durationNotice, setDurationNotice] = useState('');
+
+  // Ganti jam mulai: kalau durasi lama melewati jam tutup, durasi dikosongkan dan diminta memilih ulang
+  const changeTime = (time) => {
+    const max = maxDurationFor(time);
+    const tooLong = b.duration && Number(b.duration) > max;
+    const closeAt = fmtTime(SERVICE_HOURS.close);
+    setDurationNotice(
+      tooLong
+        ? `Durasi ${b.duration} jam melewati pukul ${closeAt}. Silakan pilih ulang durasi (maksimal ${max} jam).`
+        : time && max < maxDurationFor('')
+          ? `Layanan tersedia sampai pukul ${closeAt}. Untuk mulai pukul ${fmtTime(time)}, durasi maksimal adalah ${max} jam.`
+          : ''
+    );
+    set(tooLong ? { time, duration: '' } : { time });
+  };
+
   const toggleNeed = (id) => set({ needs: b.needs.includes(id) ? b.needs.filter((x) => x !== id) : [...b.needs, id] });
 
   const handleSubmit = (e) => {
@@ -77,7 +94,7 @@ export default function Booking({ booking: b, onChange, onSubmit, onViewCompanio
 
   return (
     <>
-      <PageHeader eyebrow="Pemesanan" title="Pesan pendamping lansia" desc="Lengkapi data di bawah ini. Kolom bertanda * wajib diisi.">
+      <PageHeader eyebrow="Pemesanan" title="Pesan pendamping lansia" desc={`Lengkapi data di bawah ini. Kolom bertanda * wajib diisi. Pesanan bisa diajukan kapan saja dan dikonfirmasi admin pukul ${ADMIN_HOURS}.`}>
         <div className="mt-6 max-w-md">
           <div className="flex justify-between text-sm font-semibold text-muted">
             <span>Kelengkapan formulir</span>
@@ -184,12 +201,15 @@ export default function Booking({ booking: b, onChange, onSubmit, onViewCompanio
 
             {/* 5. Jadwal */}
             <Section n={5} title="Jadwal layanan" done={done.schedule}>
+              <p className="-mt-2 mb-5 flex items-center gap-2 text-sm text-muted">
+                <Icon name="clock" className="h-4 w-4 shrink-0 text-forest-500" /> Jam layanan {SERVICE_HOURS.label}.
+              </p>
               <div className="grid gap-5 sm:grid-cols-3">
                 <Field id="date" label="Tanggal" required error={errors.date}>
                   <input id="date" type="date" min={dateFromToday(1)} className={inputClass(errors.date)} value={b.date} onChange={(e) => set({ date: e.target.value })} />
                 </Field>
                 <Field id="time" label="Waktu mulai" required error={errors.time}>
-                  <select id="time" className={inputClass(errors.time)} value={b.time} onChange={(e) => set({ time: e.target.value })}>
+                  <select id="time" className={inputClass(errors.time)} value={b.time} onChange={(e) => changeTime(e.target.value)}>
                     <option value="">Pilih jam</option>
                     {TIMES.map((t) => (
                       <option key={t} value={t}>{fmtTime(t)}</option>
@@ -199,12 +219,17 @@ export default function Booking({ booking: b, onChange, onSubmit, onViewCompanio
                 <Field id="duration" label="Durasi" required error={errors.duration}>
                   <select id="duration" className={inputClass(errors.duration)} value={b.duration} onChange={(e) => set({ duration: e.target.value })}>
                     <option value="">Pilih durasi</option>
-                    {DURATIONS.map((d) => (
+                    {availableDurations(b.time).map((d) => (
                       <option key={d} value={d}>{d} jam</option>
                     ))}
                   </select>
                 </Field>
               </div>
+              {durationNotice && (
+                <p className="mt-4 flex items-start gap-2 rounded-xl bg-sun-50 px-4 py-3 text-sm text-ink">
+                  <Icon name="info" className="mt-0.5 h-4 w-4 shrink-0 text-[#B86B00]" /> {durationNotice}
+                </p>
+              )}
               {b.time && b.duration && (
                 <p className="mt-4 flex items-start gap-2 rounded-xl bg-forest-50 px-4 py-3 text-sm text-forest-800">
                   <Icon name="clock" className="mt-0.5 h-4 w-4 shrink-0" /> Layanan berlangsung pukul {fmtTime(b.time)} sampai {endTime(b.time, b.duration)}.
@@ -285,7 +310,7 @@ export default function Booking({ booking: b, onChange, onSubmit, onViewCompanio
             <p className="text-sm font-bold uppercase tracking-wider text-forest-500">Pesanan Anda</p>
             <dl className="mt-4 grid gap-3 text-sm">
               <div className="flex justify-between gap-3"><dt className="text-muted">Layanan</dt><dd className="text-right font-semibold">{service?.title ?? '-'}</dd></div>
-              <div className="flex justify-between gap-3"><dt className="text-muted">Jadwal</dt><dd className="text-right font-semibold">{b.date ? b.date.split('-').reverse().join('/') : '-'}{b.time ? `, ${fmtTime(b.time)}` : ''}</dd></div>
+              <div className="flex justify-between gap-3"><dt className="text-muted">Jadwal</dt><dd className="text-right font-semibold">{b.date ? b.date.split('-').reverse().join('/') : '-'}{b.time ? `, ${fmtTime(b.time)}` : ''}{b.time && b.duration ? ` - ${endTime(b.time, b.duration)}` : ''}</dd></div>
               <div className="flex justify-between gap-3"><dt className="text-muted">Pendamping</dt><dd className="text-right font-semibold">{chosen ? `${chosen.name}${b.companionId === 'auto' ? ' (dipilihkan)' : ''}` : '-'}</dd></div>
             </dl>
             <div className="my-4 border-t border-dashed border-forest-100" />
