@@ -20,18 +20,19 @@ export function Navbar({ route, go, onLogin }) {
   };
   return (
     <header className="sticky top-0 z-40 border-b border-forest-100/70 bg-beige/85 backdrop-blur-md">
-      <Container className="flex h-16 items-center justify-between md:h-20">
-        <button onClick={() => nav('/')} className="flex min-w-0 items-center gap-2" aria-label="TetanggaCare, ke beranda">
-          <Logo variant="emblem" className="h-9 md:h-12" />
-          <Wordmark className="text-lg md:text-xl" />
+      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 md:h-20">
+        {/* Logo: tidak boleh menyusut supaya tulisan tidak tertimpa */}
+        <button onClick={() => nav('/')} className="flex shrink-0 items-center gap-2" aria-label="TetanggaCare, ke beranda">
+          <Logo variant="emblem" className="h-9 md:h-11" />
+          <Wordmark className="whitespace-nowrap text-lg md:text-xl" />
         </button>
 
-        <nav className="hidden items-center gap-1 xl:flex" aria-label="Menu utama">
+        <nav className="hidden min-w-0 items-center gap-0.5 xl:flex" aria-label="Menu utama">
           {LINKS.map((l) => (
             <button
               key={l.path}
               onClick={() => nav(l.path)}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+              className={`whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold transition ${
                 route === l.path ? 'bg-forest-100 text-forest-700' : 'text-muted hover:bg-white hover:text-forest-700'
               }`}
             >
@@ -41,10 +42,10 @@ export function Navbar({ route, go, onLogin }) {
         </nav>
 
         <div className="flex shrink-0 items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={onLogin} className="hidden xl:inline-flex">
+          <Button variant="ghost" size="sm" onClick={onLogin} className="hidden whitespace-nowrap xl:inline-flex">
             <Icon name="user" className="h-4 w-4" /> Masuk
           </Button>
-          <Button size="sm" onClick={() => nav('/pesan')} className="hidden md:inline-flex">
+          <Button size="sm" onClick={() => nav('/pesan')} className="hidden whitespace-nowrap lg:inline-flex">
             Pesan Pendamping
           </Button>
           <button
@@ -56,7 +57,7 @@ export function Navbar({ route, go, onLogin }) {
             <Icon name={open ? 'x' : 'menu'} className="h-6 w-6" />
           </button>
         </div>
-      </Container>
+      </div>
 
       {open && (
         <div className="animate-fade-up max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-forest-100 bg-beige xl:hidden">
