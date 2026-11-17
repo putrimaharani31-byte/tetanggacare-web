@@ -23,8 +23,9 @@
 }
 
 @layer base {
-  html { scroll-behavior: smooth; }
-  body { background: var(--color-beige); color: var(--color-ink); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+   html { scroll-behavior: smooth; overflow-x: clip; }
+  @supports not (overflow: clip) { html, body { overflow-x: hidden; } }
+    body { overflow-x: clip; background: var(--color-beige); color: var(--color-ink); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
   ::selection { background: var(--color-forest-200); }
   button { cursor: pointer; }
 }
